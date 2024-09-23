@@ -6,48 +6,71 @@ import { Button } from "@/components/ui/button";
 import { PinContainer } from "@/components/ui/3d-pin";
 import { useRouter } from "next/navigation";
 import { Loader2Icon } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
-function LandingPage() {
+interface Procedure {
+  title: string;
+  description: string;
+}
+
+const procedures: Procedure[] = [
+  {
+    title: "Step 1: Report the Accident",
+    description:
+      "Upload photos and videos of the accident scene with a brief description.",
+  },
+  {
+    title: "Step 2: Verification",
+    description:
+      "Our AI system verifies the authenticity of the report using machine learning.",
+  },
+  {
+    title: "Step 3: Finds nearest Helpers",
+    description:
+      "Our system finds the nearest volunteers and hospital to aid in this situation",
+  },
+  {
+    title: "Step 4: Notify Volunteers",
+    description:
+      "Nearby volunteers are notified and can respond to the situation immediately.",
+  },
+  {
+    title: "Step 5: Notify Hospitals",
+    description:
+      "If serious, the nearest hospital is informed and prepared for emergency care.",
+  },
+  {
+    title: "Step 6: Monitor and Resolve",
+    description:
+      "The accident is monitored until resolved, ensuring quick and effective responses.",
+  },
+];
+
+const LandingPage: React.FC = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleReportClick = () => {
-    setIsLoading(true);
-    router.push("/reportingPage");
+    setIsDialogOpen(true);
   };
 
-  const procedures = [
-    {
-      title: "Step 1: Report the Accident",
-      description:
-        "Upload photos and videos of the accident scene with a brief description.",
-    },
-    {
-      title: "Step 2: Verification",
-      description:
-        "Our AI system verifies the authenticity of the report using machine learning.",
-    },
-    {
-      title: "Step 3: Finds nearest Helpers",
-      description:
-        "Our system finds the nearest volunteers and hospital to aid in this situation",
-    },
-    {
-      title: "Step 4: Notify Volunteers",
-      description:
-        "Nearby volunteers are notified and can respond to the situation immediately.",
-    },
-    {
-      title: "Step 5: Notify Hospitals",
-      description:
-        "If serious, the nearest hospital is informed and prepared for emergency care.",
-    },
-    {
-      title: "Step 6: Monitor and Resolve",
-      description:
-        "The accident is monitored until resolved, ensuring quick and effective responses.",
-    },
-  ];
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+  };
+
+  const handleProceed = () => {
+    setIsLoading(true);
+    setIsDialogOpen(false);
+    router.push("/reportingPage");
+  };
 
   return (
     <div className="relative flex flex-col items-center justify-center">
@@ -107,8 +130,34 @@ function LandingPage() {
           </PinContainer>
         ))}
       </div>
+
+      {/* Dialog Box */}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+  <DialogContent className="max-w-4xl p-6">
+    <DialogHeader>
+      <DialogTitle className="text-2xl font-bold">Report an Accident</DialogTitle>
+      <DialogDescription className="text-lg mt-4">
+        <p>Please follow these steps to report an accident:</p>
+        <ol className="list-decimal ml-6 mt-2">
+          <li>Take clear photos and videos of the accident scene.</li>
+          <li>Provide a brief description of the accident.</li>
+          <li>Your identity will remain anonymous.</li>
+        </ol>
+      </DialogDescription>
+    </DialogHeader>
+    <div className="flex justify-end mt-4">
+      <Button onClick={handleCloseDialog} className="mr-2 bg-gray-300">
+        Cancel
+      </Button>
+      <Button onClick={handleProceed} className="bg-blue-600">
+        Proceed
+      </Button>
+    </div>
+  </DialogContent>
+</Dialog>
+
     </div>
   );
-}
+};
 
 export default LandingPage;

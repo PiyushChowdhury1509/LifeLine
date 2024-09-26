@@ -133,29 +133,30 @@ const LandingPage: React.FC = () => {
 
       {/* Dialog Box */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-  <DialogContent className="max-w-4xl p-6">
-    <DialogHeader>
-      <DialogTitle className="text-2xl font-bold">Report an Accident</DialogTitle>
-      <DialogDescription className="text-lg mt-4">
-        <p>Please follow these steps to report an accident:</p>
-        <ol className="list-decimal ml-6 mt-2">
-          <li>Take clear photos and videos of the accident scene.</li>
-          <li>Provide a brief description of the accident.</li>
-          <li>Your identity will remain anonymous.</li>
-        </ol>
-      </DialogDescription>
-    </DialogHeader>
-    <div className="flex justify-end mt-4">
-      <Button onClick={handleCloseDialog} className="mr-2 bg-gray-300">
-        Cancel
-      </Button>
-      <Button onClick={handleProceed} className="bg-blue-600">
-        Proceed
-      </Button>
-    </div>
-  </DialogContent>
-</Dialog>
-
+        <DialogContent className="max-w-4xl p-6">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold">
+              Report an Accident
+            </DialogTitle>
+            <DialogDescription className="text-lg mt-4">
+              <p>Please follow these steps to report an accident:</p>
+              <ol className="list-decimal ml-6 mt-2">
+                <li>Take clear photos and videos of the accident scene.</li>
+                <li>Provide a brief description of the accident.</li>
+                <li>Your identity will remain anonymous.</li>
+              </ol>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end mt-4">
+            <Button onClick={handleCloseDialog} className="mr-2 bg-gray-300">
+              Cancel
+            </Button>
+            <Button onClick={handleProceed} className="bg-blue-600">
+              Proceed
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

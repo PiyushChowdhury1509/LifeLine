@@ -1,16 +1,17 @@
 import { NextResponse } from 'next/server';
 import cloudinary from 'cloudinary';
-import { NextRequest } from 'next/server'; 
+import { NextRequest } from 'next/server';
 
+//@ts-ignore
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME as string,
+  api_key: process.env.CLOUDINARY_API_KEY as string,
+  api_secret: process.env.CLOUDINARY_API_SECRET as string,
 });
 
 async function parseFormData(req: NextRequest): Promise<File[]> {
   const formData = await req.formData();
-  const files = formData.getAll('file') as File[]; 
+  const files = formData.getAll('file') as File[];
   return files;
 }
 
@@ -26,17 +27,19 @@ export const POST = async (req: NextRequest) => {
 
       console.log('Uploading file type:', file.type);
 
-      const fileType = file.type.startsWith('video/') ? 'video' : 'image'; // Adjusted to match standard MIME types
+      const fileType = file.type.startsWith('video/') ? 'video' : 'image';
 
       return new Promise((resolve, reject) => {
         const uploadStream = cloudinary.v2.uploader.upload_stream(
           { resource_type: fileType, folder: 'accidents' },
-          (error, result) => {
+          (error: any, result: any) => {
             if (error) {
               reject(error);
-            } else {
+            } else if (result && result.secure_url) {
               console.log(`Uploaded ${fileType} URL:`, result.secure_url);
               resolve(result.secure_url);
+            } else {
+              reject(new Error('No secure URL returned from Cloudinary.'));
             }
           }
         );

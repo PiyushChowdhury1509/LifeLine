@@ -5,17 +5,26 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Card } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import { ShootingStars } from '@/components/ui/shooting-stars';
+import { StarsBackground } from '@/components/ui/stars-background';
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
+import { MultiStepLoader as Loader } from '@/components/ui/multi-step-loader';
+
+const loadingStates = [
+  { text: "Preparing to upload files" },
+  { text: "Uploading images and videos" },
+  { text: "Finding nearby volunteers" },
+  { text: "Submitting accident report" },
+];
 
 const UploadForm: React.FC = () => {
+  const [loading, setLoading] = useState(false); 
+  const [currentStep, setCurrentStep] = useState(0);
   const [files, setFiles] = useState<File[]>([]);
   const [videoFiles, setVideoFiles] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [videoPreviewUrls, setVideoPreviewUrls] = useState<string[]>([]);
   const [description, setDescription] = useState<string>('');
-  const [activeFAQ, setActiveFAQ] = useState<number | null>(null);
-  const [verificationMethod, setVerificationMethod] = useState<string | null>(null); 
-  const [phoneNumber, setPhoneNumber] = useState<string>(''); 
-  const [otp, setOtp] = useState<string[]>(['', '', '', '']); 
   const [email, setEmail] = useState<string>(''); 
 
   const imageInputRef = useRef<HTMLInputElement | null>(null);
@@ -50,126 +59,64 @@ const UploadForm: React.FC = () => {
     setDescription(e.target.value);
   };
 
-  const handleVerificationMethodChange = (method: string) => {
-    setVerificationMethod(method);
-  };
-
-  const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPhoneNumber(e.target.value);
-  };
-
-  const handleOtpChange = (index: number, value: string) => {
-    const newOtp = [...otp];
-    newOtp[index] = value;
-    setOtp(newOtp);
-  };
-
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
-  };
-
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    const formData = new FormData();
-
-    for (const file of files) {
-      formData.append('file', file);
-    }
-    
-    for (const videoFile of videoFiles) {
-      formData.append('file', videoFile);
-    }
-  
-    formData.append('description', description);
-    formData.append('reporters', email);
-  
-    toast.info('Uploading files...', { position: "top-center" });
-  
+    setLoading(true); 
+    setCurrentStep(0);
     try {
-      const uploadResponse = await fetch('/api/uploadFiles', {
-        method: 'POST',
-        body: formData,
-      });
+      setCurrentStep(1); 
+      const formData = new FormData();
+      files.forEach(file => formData.append('file', file));
+      videoFiles.forEach(videoFile => formData.append('file', videoFile));
+      formData.append('description', description);
+      formData.append('reporters', email);
 
-      if (!uploadResponse.ok) {
-        throw new Error('Network response was not ok.');
-      }
-
+      const uploadResponse = await fetch('/api/uploadFiles', { method: 'POST', body: formData });
+      if (!uploadResponse.ok) throw new Error('File upload failed.');
       const uploadData = await uploadResponse.json();
-      toast.success('Files uploaded successfully!', { position: "top-center" });
 
-      let location = {
-        type: 'Point',
-        coordinates: [0, 0], 
-      };
-
+      setCurrentStep(2); 
+      let location = { type: 'Point', coordinates: [0, 0] };
       const position = await new Promise<GeolocationCoordinates | null>((resolve) => {
         if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(
-            (pos) => resolve(pos.coords),
-            () => resolve(null)
-          );
+          navigator.geolocation.getCurrentPosition(pos => resolve(pos.coords), () => resolve(null));
         } else {
-          console.error("Geolocation is not supported by this browser.");
           resolve(null);
         }
       });
+      if (position) location.coordinates = [position.longitude, position.latitude];
 
-      if (position) {
-        location = {
-          type: 'Point',
-          coordinates: [position.longitude, position.latitude],
-        };
-      }
-
+      setCurrentStep(3); 
       const reportData = {
         description,
-        reporters: [email], 
-        photos: uploadData.urls.filter((url: string) => url.includes('image')), 
+        reporters: [email],
+        photos: uploadData.urls.filter((url: string) => url.includes('image')),
         videos: uploadData.urls.filter((url: string) => url.includes('video')),
-        location,  
-        nearestVolunteers: [], // This should be populated in the backend
+        location,
       };
-
-      toast.info('Submitting accident report...', { position: "top-center" });
-
       const reportResponse = await fetch('/api/reportAccident', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(reportData),
       });
-
-      if (!reportResponse.ok) {
-        throw new Error('Network response was not ok.');
-      }
-
-      const reportDataResponse = await reportResponse.json();
-      toast.success('Accident reported successfully!', { position: "top-center" });
-      console.log(reportDataResponse);
-
+      if (!reportResponse.ok) throw new Error('Report submission failed.');
+      setCurrentStep(4); 
+      toast.success('Accident reported successfully!');
     } catch (error: any) {
-      toast.error(`Error: ${error.message}`, { position: "top-center" });
+      toast.error(`Error: ${error.message}`);
+    } finally {
+      setLoading(false); 
     }
-  };
-
-  const toggleFAQ = (index: number) => {
-    setActiveFAQ(activeFAQ === index ? null : index);
   };
 
   return (
     <>
       <ToastContainer />
-      <br/>
-      <br/>
+      <Loader loadingStates={loadingStates} loading={loading} currentStep={currentStep} />
       <div className="bg-[#0D1117] text-[#C9D1D9] min-h-screen p-8 space-y-8">
-        {/* Top Section */}
         <div className="text-center">
           <h1 className="text-4xl font-bold text-[#58A6FF]">Accident Reporting</h1>
-          <p className="text-[#C9D1D9] mt-2">
-            Use this form to report accidents by uploading relevant photos, videos, and descriptions.
-          </p>
+          <p className="text-[#C9D1D9] mt-2">Use this form to report accidents by uploading relevant photos, videos, and descriptions.</p>
         </div>
 
         {/* Upload and Preview Section */}
@@ -259,47 +206,39 @@ const UploadForm: React.FC = () => {
 
         {/* FAQ Section */}
         <div>
-          <h2 className="text-2xl font-semibold mb-4 text-[#58A6FF]">Frequently Asked Questions</h2>
-          <div className="space-y-4">
-            <div className="border-b border-[#C9D1D9] pb-2">
-              <button onClick={() => toggleFAQ(1)} className="w-full text-left">
-                <h3 className="text-lg text-[#C9D1D9] hover:text-[#58A6FF]">
-                  What types of files can I upload?
-                </h3>
-              </button>
-              {activeFAQ === 1 && (
-                <p className="text-[#C9D1D9] mt-2">
-                  You can upload images and videos relevant to the accident.
-                </p>
-              )}
-            </div>
-            <div className="border-b border-[#C9D1D9] pb-2">
-              <button onClick={() => toggleFAQ(2)} className="w-full text-left">
-                <h3 className="text-lg text-[#C9D1D9] hover:text-[#58A6FF]">
-                  How will my data be used?
-                </h3>
-              </button>
-              {activeFAQ === 2 && (
-                <p className="text-[#C9D1D9] mt-2">
-                  Your data will be used to provide timely assistance and share with relevant authorities.
-                </p>
-              )}
-            </div>
-            <div className="border-b border-[#C9D1D9] pb-2">
-              <button onClick={() => toggleFAQ(3)} className="w-full text-left">
-                <h3 className="text-lg text-[#C9D1D9] hover:text-[#58A6FF]">
-                  Can I report anonymously?
-                </h3>
-              </button>
-              {activeFAQ === 3 && (
-                <p className="text-[#C9D1D9] mt-2">
-                  Yes, you can choose not to share personal information while reporting.
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
+      <h2 className="text-2xl font-semibold mb-4 text-[#58A6FF]">Frequently Asked Questions</h2>
+      <Accordion type="single" collapsible>
+        <AccordionItem value="item-1">
+          <AccordionTrigger className="text-lg text-[#C9D1D9] hover:text-[#58A6FF]">
+            What types of files can I upload?
+          </AccordionTrigger>
+          <AccordionContent className="text-[#C9D1D9]">
+            You can upload images and videos relevant to the accident.
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="item-2">
+          <AccordionTrigger className="text-lg text-[#C9D1D9] hover:text-[#58A6FF]">
+            How will my data be used?
+          </AccordionTrigger>
+          <AccordionContent className="text-[#C9D1D9]">
+            Your data will be used to provide timely assistance and not be shared with relevant authorities.
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="item-3">
+          <AccordionTrigger className="text-lg text-[#C9D1D9] hover:text-[#58A6FF]">
+            Can I report anonymously?
+          </AccordionTrigger>
+          <AccordionContent className="text-[#C9D1D9]">
+            Yes, you can choose not to share personal information while reporting.
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </div>
       </div>
+      {/*<ShootingStars/>
+      <StarsBackground/>*/}
     </>
   );
 };

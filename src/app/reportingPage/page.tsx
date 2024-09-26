@@ -9,6 +9,7 @@ import { ShootingStars } from '@/components/ui/shooting-stars';
 import { StarsBackground } from '@/components/ui/stars-background';
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { MultiStepLoader as Loader } from '@/components/ui/multi-step-loader';
+import { useRouter } from 'next/navigation';
 
 const loadingStates = [
   { text: "Preparing to upload files" },
@@ -18,6 +19,7 @@ const loadingStates = [
 ];
 
 const UploadForm: React.FC = () => {
+  const router=useRouter();
   const [loading, setLoading] = useState(false); 
   const [currentStep, setCurrentStep] = useState(0);
   const [files, setFiles] = useState<File[]>([]);
@@ -102,9 +104,12 @@ const UploadForm: React.FC = () => {
       if (!reportResponse.ok) throw new Error('Report submission failed.');
       setCurrentStep(4); 
       toast.success('Accident reported successfully!');
-    } catch (error: any) {
+      router.push('/thankyou')
+    } 
+    catch (error: any) {
       toast.error(`Error: ${error.message}`);
-    } finally {
+    } 
+    finally {
       setLoading(false); 
     }
   };

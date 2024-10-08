@@ -139,32 +139,44 @@ export default function Form() {
             </h2>
             <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
               <div className="sm:col-span-3">
-                <Input
-                  label="First Name"
+              <Input
+                  id="First Name"
                   {...register("firstName")}
-                  error={errors.firstName?.message}
-                  placeholder="John"
+                  placeholder="first name"
                   className="dark:bg-gray-800 dark:text-white"
                 />
+                {errors.firstName?.message && (
+                  <p className="mt-2 text-sm text-red-400">
+                    {errors.firstName.message}
+                  </p>
+                )}
               </div>
               <div className="sm:col-span-3">
                 <Input
-                  label="Last Name"
+                  id="Last Name"
                   {...register("lastName")}
-                  error={errors.lastName?.message}
-                  placeholder="Doe"
+                  placeholder="surname"
                   className="dark:bg-gray-800 dark:text-white"
                 />
+                {errors.lastName?.message && (
+                  <p className="mt-2 text-sm text-red-400">
+                    {errors.lastName.message}
+                  </p>
+                )}
               </div>
               <div className="sm:col-span-6">
                 <Input
-                  label="Email"
+                  id="Email"
                   type="email"
                   {...register("email")}
-                  error={errors.email?.message}
-                  placeholder="johndoe@example.com"
+                  placeholder="abc@example.com"
                   className="dark:bg-gray-800 dark:text-white"
                 />
+                {errors.email?.message && (
+                  <p className="mt-2 text-sm text-red-400">
+                    {errors.email.message}
+                  </p>
+                )}
               </div>
             </div>
           </motion.div>
@@ -184,8 +196,8 @@ export default function Form() {
             </h2>
             <div className="mt-4">
               <Checkbox
-                label="Use current location"
-                onCheckedChange={(value) => {
+                id="Use current location"
+                onCheckedChange={(value: any) => {
                   setUseCurrentLocation(value);
                   if (value) handleLocation();
                 }}
@@ -198,7 +210,7 @@ export default function Form() {
               <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                 <div className="sm:col-span-3">
                   <Input
-                    label="Latitude"
+                    id="Latitude"
                     value={latitude}
                     readOnly
                     placeholder="Latitude"
@@ -207,7 +219,7 @@ export default function Form() {
                 </div>
                 <div className="sm:col-span-3">
                   <Input
-                    label="Longitude"
+                    id="Longitude"
                     value={longitude}
                     readOnly
                     placeholder="Longitude"
@@ -219,48 +231,73 @@ export default function Form() {
               <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                 <div className="sm:col-span-3">
                   <Input
-                    label="Country"
+                    id="Country"
+                    type="text"
                     {...register("country")}
-                    error={errors.country?.message}
-                    placeholder="Country"
+                    placeholder="your country"
                     className="dark:bg-gray-800 dark:text-white"
                   />
+                  {errors.country?.message && (
+                    <p className="mt-2 text-sm text-red-400">
+                      {errors.country.message}
+                    </p>
+                  )}
                 </div>
                 <div className="sm:col-span-3">
                   <Input
-                    label="State"
+                    id="State"
+                    type="text"
                     {...register("state")}
-                    error={errors.state?.message}
-                    placeholder="State"
+                    placeholder="your state"
                     className="dark:bg-gray-800 dark:text-white"
                   />
+                  {errors.state?.message && (
+                    <p className="mt-2 text-sm text-red-400">
+                      {errors.state.message}
+                    </p>
+                  )}
                 </div>
                 <div className="sm:col-span-3">
                   <Input
-                    label="City"
+                    id="City"
+                    type="text"
                     {...register("city")}
-                    error={errors.city?.message}
-                    placeholder="City"
+                    placeholder="Your city"
                     className="dark:bg-gray-800 dark:text-white"
                   />
+                  {errors.city?.message && (
+                    <p className="mt-2 text-sm text-red-400">
+                      {errors.city.message}
+                    </p>
+                  )}
                 </div>
                 <div className="sm:col-span-6">
                   <Input
-                    label="Street"
+                    id="Street"
+                    type="text"
                     {...register("street")}
-                    error={errors.street?.message}
-                    placeholder="123 Main St"
+                    placeholder="nearest street"
                     className="dark:bg-gray-800 dark:text-white"
                   />
+                  {errors.street?.message && (
+                    <p className="mt-2 text-sm text-red-400">
+                      {errors.street.message}
+                    </p>
+                  )}
                 </div>
                 <div className="sm:col-span-3">
                   <Input
-                    label="Zip Code"
+                    id="Zip Code"
+                    type="text"
                     {...register("zip")}
-                    error={errors.zip?.message}
                     placeholder="Postal Code"
                     className="dark:bg-gray-800 dark:text-white"
                   />
+                  {errors.zip?.message && (
+                    <p className="mt-2 text-sm text-red-400">
+                      {errors.zip.message}
+                    </p>
+                  )}
                 </div>
               </div>
             )}
@@ -280,23 +317,31 @@ export default function Form() {
             <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
               <div className="sm:col-span-3">
                 <Input
-                  label="Password"
+                  id="Password"
                   type="password"
                   {...register("password")}
-                  error={errors.password?.message}
                   placeholder="Password"
                   className="dark:bg-gray-800 dark:text-white"
                 />
+                {errors.password?.message && (
+                  <p className="mt-2 text-sm text-red-400">
+                    {errors.password.message}
+                  </p>
+                )}
               </div>
               <div className="sm:col-span-3">
                 <Input
-                  label="Confirm Password"
+                  id="confirmPassword"
                   type="password"
                   {...register("confirmPassword")}
-                  error={errors.confirmPassword?.message}
                   placeholder="Confirm Password"
                   className="dark:bg-gray-800 dark:text-white"
                 />
+                {errors.confirmPassword?.message && (
+                  <p className="mt-2 text-sm text-red-400">
+                    {errors.confirmPassword.message}
+                  </p>
+                )}
               </div>
             </div>
           </motion.div>
@@ -324,8 +369,6 @@ export default function Form() {
             </div>
           </motion.div>
         )}
-
-        
       </form>
       {/* Navigation */}
       <div className="mt-8 pt-5">

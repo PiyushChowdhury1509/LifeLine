@@ -1,9 +1,4 @@
-/**
- * Note: Use position fixed according to your needs
- * Desktop navbar is better positioned at the bottom
- * Mobile navbar is better positioned at bottom right.
- **/
-
+'use client'
 import { cn } from "@/lib/utils";
 import { IconLayoutNavbarCollapse } from "@tabler/icons-react";
 import {
@@ -43,7 +38,7 @@ const FloatingDockMobile = ({
 }) => {
   const [open, setOpen] = useState(false);
   return (
-    <div className={cn("relative block md:hidden", className)}>
+    <div className={cn("fixed bottom-4 right-4 md:hidden", className)}>
       <AnimatePresence>
         {open && (
           <motion.div
@@ -102,7 +97,7 @@ const FloatingDockDesktop = ({
       onMouseMove={(e) => mouseX.set(e.pageX)}
       onMouseLeave={() => mouseX.set(Infinity)}
       className={cn(
-        "mx-auto hidden md:flex h-16 gap-4 items-end  rounded-2xl bg-gray-50 dark:bg-neutral-900 px-4 pb-3",
+        "fixed bottom-4 left-1/2 transform -translate-x-1/2 flex h-16 gap-4 items-end rounded-2xl bg-gray-50 dark:bg-neutral-900 px-4 pb-3",
         className
       )}
     >

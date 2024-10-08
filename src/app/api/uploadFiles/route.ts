@@ -53,7 +53,7 @@ export const POST = async (req: NextRequest) => {
 
     console.log('All uploaded URLs:', urls);
 
-    return NextResponse.json({ urls });
+    return NextResponse.json({ urls }, { status: 200});
   } catch (error) {
     console.error('Upload error:', error);
     return NextResponse.json({ error: 'Failed to upload files' }, { status: 500 });

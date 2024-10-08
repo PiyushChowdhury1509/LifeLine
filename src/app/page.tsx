@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { PinContainer } from "@/components/ui/3d-pin";
 import { useRouter } from "next/navigation";
 import { Loader2Icon } from "lucide-react";
+import { FeaturesSection } from "@/components/ui/featureCards";
 import {
   Dialog,
   DialogContent,
@@ -113,7 +114,7 @@ const LandingPage: React.FC = () => {
           </Button>
         </motion.div>
       </LampContainer>
-
+        
       {/* Procedure Cards */}
       <div className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 max-w-5xl">
         {procedures.map((procedure, index) => (
@@ -157,6 +158,9 @@ const LandingPage: React.FC = () => {
           </div>
         </DialogContent>
       </Dialog>
+      <div>
+        <FeaturesSection/>
+      </div>
     </div>
   );
 };

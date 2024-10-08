@@ -18,7 +18,7 @@ export const POST = async (req: Request): Promise<NextResponse> => {
         type: 'Point',
         coordinates: [0, 0],
       },
-      hospital: hospital || "60b8d295f2bfcf001c8b4567", 
+      hospital: hospital || "No nearby hospitals found", 
       nearestVolunteers: [],
       status: status || 'Pending', 
     };
